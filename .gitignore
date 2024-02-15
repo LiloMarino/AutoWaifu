@@ -9,7 +9,6 @@ venv/
 env/
 .venv/
 ENV/
-
 # IDEs and editors
 .idea/
 .vscode/
@@ -32,4 +31,5 @@ Pipfile.lock
 
 # Outros
 account.txt
+.env
 driver/chromedriver.exe

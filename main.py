@@ -1,7 +1,9 @@
+import os
+from dotenv import load_dotenv
 from User import User
 from config import *
 
-ACCOUNT_TXT = ROOT_FOLDER / "account.txt"
+load_dotenv()
 
 def rolls100(user: User):
     user.roll_until_end()
@@ -15,14 +17,10 @@ def rolls1000(user: User):
         rolls100(user)
 
 
-with open(ACCOUNT_TXT) as f:
-    email = f.readline().strip()
-    password = f.readline().strip()
-
 user = User(
-    email,
-    password,
-    f"https://discord.com/login?redirect_to=%2Fchannels%2F{SERVER_ID}%2F{CHANNEL_ID}",
+    os.getenv("EMAIL"),
+    os.getenv("PASSWORD"),
+    f'https://discord.com/login?redirect_to=%2Fchannels%2F{os.getenv("SERVER_ID")}%2F{os.getenv("CHANNEL_ID")}',
 )
 user.login()
 while True:

@@ -64,7 +64,7 @@ class User:
         
         return last_message
     
-    def wait_for_emoji(self, emoji, max_attempts=5):
+    def wait_for_emoji(self, emoji, max_attempts=3):
         for _ in range(max_attempts):
             # Selecione a última mensagem
             last_message = self.get_last_message()
@@ -86,7 +86,7 @@ class User:
             sleep(TIME_ROLL)
         return False
     
-    def wait_for_sender(self, sender_name, max_attempts=5):
+    def wait_for_sender(self, sender_name, max_attempts=3):
         for _ in range(max_attempts):
             # Selecione a última mensagem
             last_message = self.get_last_message()
@@ -138,10 +138,8 @@ class User:
             
     def roll_until_end(self):
         rolls, us = self.view_rolls()
-        while rolls != 0 or us != 0:
-            for _ in range(rolls+us):
-                self.roll_waifu()
-            rolls, us = self.view_rolls()
+        for _ in range(rolls+us):
+            self.roll_waifu()
             
         
     def log(self, msg):
