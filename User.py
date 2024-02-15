@@ -150,7 +150,7 @@ class User:
             text = self.get_last_message().text
             return (
                 re.search(
-                    r"(\w+), os rolls são limitado a (\d+) usos por hora. (\d+) min restante\(s\)",
+                    r"os rolls são limitado a (\d+) usos por hora.",
                     text,
                 )
                 is not None
