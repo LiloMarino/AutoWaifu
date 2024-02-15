@@ -78,15 +78,18 @@ class User:
 
             except Exception:
                 # Não encontrou o emoji
+                logging.warning("EMOJI NOT FOUND")
                 sleep(TIME_ROLL)
                 return False
 
             for img_tag in img_tags:
                 if img_tag.get_attribute("alt") == emoji:
+
                     return True
 
             # Espere um pouco antes de verificar novamente
             sleep(TIME_ROLL)
+        logging.warning("MAX ATTEMPTS EXCEDED")
         return False
 
     def wait_for_sender(self, sender_name, max_attempts=3):
@@ -101,6 +104,7 @@ class User:
                 ).text
             except Exception:
                 # É a mensagem do mesmo usuário
+                logging.warning("RESPONSE NOT FOUND")
                 sleep(TIME_ROLL)
                 return False
 
@@ -110,6 +114,7 @@ class User:
 
             # Espere um pouco antes de verificar novamente
             sleep(TIME_ROLL)
+        logging.warning("MAX ATTEMPTS EXCEDED")
         return False
 
     def view_rolls(self):
@@ -155,6 +160,7 @@ class User:
         for _ in range(rolls + us):
             self.roll_waifu()
             if check_end():
+                logging.info("STOP ROLLING")
                 break
 
     def log(self, msg):
