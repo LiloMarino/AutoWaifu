@@ -10,6 +10,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
 from config import *
 
+
 class User:
     """Your discord account"""
 
@@ -20,7 +21,7 @@ class User:
 
         self.service = Service(executable_path=CHROMEDRIVER_EXEC)
         if HEADLESS:
-            self.options = webdriver.ChromeOptions('--headless')
+            self.options = webdriver.ChromeOptions("--headless")
         else:
             self.options = webdriver.ChromeOptions()
         # Driver of the browser you use
@@ -53,24 +54,26 @@ class User:
         message_box.send_keys(msg)
         message_box.send_keys(Keys.ENTER)
         self.log(msg)
-        
+
     def get_last_message(self):
         messages = WebDriverWait(self.browser, TIME_TO_WAIT).until(
-            EC.presence_of_all_elements_located((By.XPATH, '//li[contains(@class, "messageListItem__6a4fb")]'))
+            EC.presence_of_all_elements_located(
+                (By.XPATH, '//li[contains(@class, "messageListItem__6a4fb")]')
+            )
         )
 
         # Selecione a última mensagem
         last_message = messages[-1]
-        
+
         return last_message
-    
+
     def wait_for_emoji(self, emoji, max_attempts=3):
         for _ in range(max_attempts):
             # Selecione a última mensagem
             last_message = self.get_last_message()
 
             try:
-               # Encontre todas as tags img dentro da última mensagem
+                # Encontre todas as tags img dentro da última mensagem
                 img_tags = last_message.find_elements(By.TAG_NAME, "img")
 
             except Exception:
@@ -85,7 +88,7 @@ class User:
             # Espere um pouco antes de verificar novamente
             sleep(TIME_ROLL)
         return False
-    
+
     def wait_for_sender(self, sender_name, max_attempts=3):
         for _ in range(max_attempts):
             # Selecione a última mensagem
@@ -93,7 +96,9 @@ class User:
 
             # Extraia o nome do remetente da última mensagem
             try:
-                current_sender_name = last_message.find_element(By.XPATH, './/div/div[1]/h3/span[1]/span[1]').text
+                current_sender_name = last_message.find_element(
+                    By.XPATH, ".//div/div[1]/h3/span[1]/span[1]"
+                ).text
             except Exception:
                 # É a mensagem do mesmo usuário
                 sleep(TIME_ROLL)
@@ -106,12 +111,14 @@ class User:
             # Espere um pouco antes de verificar novamente
             sleep(TIME_ROLL)
         return False
-    
+
     def view_rolls(self):
         self.send_message("$tu")
         self.wait_for_sender("Mudae")
         texto = self.get_last_message().text
-        rolls_match = re.search(r'Você tem (\d+) rolls(?: \(\+(\d+) \$us\))?(?: restantes)?\.', texto)
+        rolls_match = re.search(
+            r"Você tem (\d+) rolls(?: \(\+(\d+) \$us\))?(?: restantes)?\.", texto
+        )
         rolls = 0
         us = 0
         if rolls_match:
@@ -123,23 +130,33 @@ class User:
         else:
             logging.info("Nenhuma correspondência encontrada para o padrão.")
         return int(rolls), int(us)
-    
+
     def roll_waifu(self):
-        self.send_message(f'{COMMAND_PREFIX}{ROLL_COMMAND}')
+        self.send_message(f"{COMMAND_PREFIX}{ROLL_COMMAND}")
         while not self.wait_for_sender("Mudae"):
-            self.send_message(f'{COMMAND_PREFIX}{ROLL_COMMAND}')
-                
-                
+            self.send_message(f"{COMMAND_PREFIX}{ROLL_COMMAND}")
+
     def us20(self):
-        self.send_message(f'{COMMAND_PREFIX}us 20')
+        self.send_message(f"{COMMAND_PREFIX}us 20")
         self.wait_for_emoji("✅")
-            
+
     def roll_until_end(self):
+        def check_end():
+            text = self.get_last_message().text
+            return (
+                re.search(
+                    r"(\w+), os rolls são limitado a (\d+) usos por hora. (\d+) min restante\(s\)",
+                    text,
+                )
+                is not None
+            )
+
         rolls, us = self.view_rolls()
-        for _ in range(rolls+us):
+        for _ in range(rolls + us):
             self.roll_waifu()
-            
-        
+            if check_end():
+                break
+
     def log(self, msg):
         """Msg log"""
         t = datetime.now().strftime("%H:%M:%S")
