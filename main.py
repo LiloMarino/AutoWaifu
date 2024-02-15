@@ -7,8 +7,10 @@ load_dotenv()
 
 def rolls100(user: User):
     user.roll_until_end()
-    for _ in range(5):
+    rolls, us = user.view_rolls()
+    while us != 100:
         user.us20()
+        rolls, us = user.view_rolls()
     user.roll_until_end()
 
 

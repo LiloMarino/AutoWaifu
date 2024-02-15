@@ -131,10 +131,8 @@ class User:
                 
                 
     def us20(self):
-        while True:
-            self.send_message(f'{COMMAND_PREFIX}us 20')
-            if self.wait_for_emoji("✅"):
-                break
+        self.send_message(f'{COMMAND_PREFIX}us 20')
+        self.wait_for_emoji("✅")
             
     def roll_until_end(self):
         rolls, us = self.view_rolls()
