@@ -75,6 +75,9 @@ class User:
             try:
                 # Encontre todas as tags img dentro da última mensagem
                 img_tags = last_message.find_elements(By.TAG_NAME, "img")
+                for img_tag in img_tags:
+                    if img_tag.get_attribute("alt") == emoji:
+                        return True
 
             except Exception:
                 # Não encontrou o emoji
@@ -82,10 +85,6 @@ class User:
                 sleep(TIME_ROLL)
                 return False
 
-            for img_tag in img_tags:
-                if img_tag.get_attribute("alt") == emoji:
-
-                    return True
 
             # Espere um pouco antes de verificar novamente
             sleep(TIME_ROLL)
