@@ -11,7 +11,7 @@ from datetime import datetime
 from config import *
 
 
-class User:
+class Browser:
     """Your discord account"""
 
     def __init__(self, email, password, url):
