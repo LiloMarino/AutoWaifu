@@ -1,18 +1,9 @@
 import os
 from dotenv import load_dotenv
-from User import User
+from classes.Browser import Browser
 from config import *
 
 load_dotenv()
-
-def rolls100(user: User):
-    user.roll_until_end()
-    us = 0
-    while us < 100:
-        for _ in range(5):
-            user.us20()
-        rolls, us = user.view_rolls()
-    user.roll_until_end()
 
 user = User(
     os.getenv("EMAIL"),
@@ -26,8 +17,6 @@ while True:
         break
     elif comando.lower() == "roll":
         user.roll_waifu()
-    elif comando.lower() == "rolls100":
-        rolls100(user)
     elif comando.lower() == "rolls+":
         user.roll_until_end()
     elif comando.lower() == "view":
