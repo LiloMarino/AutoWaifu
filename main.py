@@ -14,12 +14,6 @@ def rolls100(user: User):
         rolls, us = user.view_rolls()
     user.roll_until_end()
 
-
-def rolls1000(user: User):
-    for _ in range(10):
-        rolls100(user)
-
-
 user = User(
     os.getenv("EMAIL"),
     os.getenv("PASSWORD"),
@@ -34,8 +28,8 @@ while True:
         user.roll_waifu()
     elif comando.lower() == "rolls100":
         rolls100(user)
-    elif comando.lower() == "rolls1000":
-        rolls1000(user)
+    elif comando.lower() == "rolls+":
+        user.roll_until_end()
     elif comando.lower() == "view":
         user.view_rolls()
     else:
