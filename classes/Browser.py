@@ -1,5 +1,4 @@
 import logging
-import re
 from time import sleep
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -9,12 +8,10 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver import ActionChains
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.support import expected_conditions as EC
-from datetime import datetime
-from classes.Auto import Auto
 import config
 
 
-class Browser(Auto):
+class Browser:
     """
     Representa um objeto de navegador Selenium com funções adicionais para fins específicos do Discord.
     Sem parâmetros; configurações globais são usadas em config.py.
