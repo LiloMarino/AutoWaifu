@@ -24,6 +24,11 @@ ROLL_COMMAND = "wa"
 TIME_TO_WAIT = 30
 TIME_ROLL = 1
 
+# Speed to claim Waifu in lovelist (Currently Fastest Possible)
+INSTANT_CLAIM_SPEED = 0
+# Speed to react on kakera (Default 1 second delay)
+INSTANT_REACT_SPEED = 1
+
 # Emoji used for claiming
 CLAIM_EMOJI = ":heart:"
 CLAIM_METHOD_CLICK = False  # If True claim will attempt to react on emoji instead of add one (Needs Emoji available)
