@@ -37,10 +37,10 @@ class Browser:
         self.logger.info("Browser thread iniciado!")
         self.logger.info("Tentando abrir o Discord no navegador")
         self.driver.get(
-            f"https://discord.com/channels/{config.SERVER_ID}/{config.CHANNEL_ID}"
+            f"https://discord.com/login?redirect_to=%2Fchannels%2F{config.SERVER_ID}%2F{config.CHANNEL_ID}"
         )
         try:
-            email = WebDriverWait(self.driver, 10).until(
+            email = WebDriverWait(self.driver, config.TIME_TO_WAIT).until(
                 lambda x: x.find_element(By.NAME, "email")
             )
         except TimeoutException:
@@ -58,9 +58,9 @@ class Browser:
             self.driver.find_element(By.NAME, "password").send_keys(config.PASSWORD)
             self.driver.find_element(By.XPATH, "//button[@type='submit']").click()
             try:
-                # Wait for main screen
-                WebDriverWait(self.driver, 30).until(
-                    lambda x: x.find_element(By.CLASS_NAME, "textAreaSlate-9-y-k2")
+                msg_xpath = '//*[@id="app-mount"]/div[2]/div[1]/div[1]/div/div[2]/div/div/div/div/div[3]/div[2]/main/form/div/div[1]/div/div[3]/div/div[2]'
+                WebDriverWait(self.driver, config.TIME_TO_WAIT).until(
+                        EC.presence_of_element_located((By.XPATH, msg_xpath))
                 )
                 if (
                     f"{config.SERVER_ID}/{config.CHANNEL_ID}"
