@@ -1,4 +1,4 @@
-from classes.Auto import Auto
+from classes.auto import Auto
 from config import *
 
 auto = Auto()

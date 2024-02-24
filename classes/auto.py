@@ -1,5 +1,5 @@
 import re
-from classes.Browser import Browser
+from classes.browser import Browser
 import config
 import logging
 
