@@ -13,6 +13,6 @@ while True:
     elif comando.lower() == "rolls+":
         auto.roll_until_end()
     elif comando.lower() == "view":
-        auto.view_rolls()
+        auto.parse_tu()
     else:
         print("COMANDO INVALIDO")
