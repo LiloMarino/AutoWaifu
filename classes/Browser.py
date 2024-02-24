@@ -66,7 +66,7 @@ class Browser:
                     f"{config.SERVER_ID}/{config.CHANNEL_ID}"
                     not in self.driver.current_url
                 ):
-                    # Logged in, but wrong channel (some weird error)
+                    # Logado, mas no canal errado (Algum erro estranho)
                     raise ValueError
             except TimeoutException or NoSuchElementException:
                 self.logger.critical(
@@ -84,42 +84,22 @@ class Browser:
                 )
                 return True
 
-    def send_message(self, msg):
+    def send_message(self, msg: str):
         """
         Envia mensagens no canal de texto
         """
-        msg_xpath = '//*[@id="app-mount"]/div[2]/div[1]/div[1]/div/div[2]/div/div/div/div/div[3]/div[2]/main/form/div/div[1]/div/div[3]/div/div[2]'
-        message_box = WebDriverWait(self.driver, config.TIME_TO_WAIT).until(
-            EC.presence_of_element_located((By.XPATH, msg_xpath))
-        )
-        message_box.send_keys(msg)
-        message_box.send_keys(Keys.ENTER)
-
-    def send_text(self, text: str):
-        """
-        Envia mensagens no canal de texto
-        """
-        # For some reason, typing directly into the message box doesn't work
-        # ActionChains must be used instead to type character by character
-
-        self.logger.info(f"Sending text: {text}")
+        self.logger.info(f"Enviando texto: {msg}")
         try:
-            message_box = WebDriverWait(self.driver, 5).until(
-                lambda x: x.find_element(By.CLASS_NAME, "textAreaSlate-9-y-k2")
+            msg_xpath = '//*[@id="app-mount"]/div[2]/div[1]/div[1]/div/div[2]/div/div/div/div/div[3]/div[2]/main/form/div/div[1]/div/div[3]/div/div[2]'
+            message_box = WebDriverWait(self.driver, config.TIME_TO_WAIT).until(
+                EC.presence_of_element_located((By.XPATH, msg_xpath))
             )
-            self.actions = ActionChains(self.driver)
-            self.actions.click(on_element=message_box)
-            for char in text:
-                self.actions.key_down(char)
-                self.actions.key_up(char)
-            self.actions.key_down(Keys.ENTER)
-            self.actions.key_up(Keys.ENTER)
-            self.actions.perform()
-            # needs to be performed in the try or the element might become stale
+            message_box.send_keys(msg)
+            message_box.send_keys(Keys.ENTER)
         except TimeoutException:
-            self.logger.warning("Discord may have crashed, refreshing page")
+            self.logger.warning("Discord pode ter crashado, recarregando a página")
             self.refresh()
-            return self.send_text(text)
+            return self.send_message(msg)
 
     def react_emoji(self, reaction: str, message_id: int):
         """
@@ -195,13 +175,13 @@ class Browser:
 
             except Exception:
                 # Não encontrou o emoji
-                logging.warning("EMOJI NOT FOUND")
+                self.logger.warning("Emoji não encontrado")
                 sleep(config.TIME_ROLL)
                 return False
 
             # Espere um pouco antes de verificar novamente
             sleep(config.TIME_ROLL)
-        logging.warning("MAX ATTEMPTS EXCEDED")
+        self.logger.warning("Tentativas máximas excedidas")
         return False
 
     def wait_for_sender(self, sender_name, max_attempts=3):
@@ -216,7 +196,7 @@ class Browser:
                 ).text
             except Exception:
                 # É a mensagem do mesmo usuário
-                logging.warning("RESPONSE NOT FOUND")
+                self.logger.warning("Remetente não encontrado")
                 sleep(config.TIME_ROLL)
                 return False
 
@@ -226,5 +206,5 @@ class Browser:
 
             # Espere um pouco antes de verificar novamente
             sleep(config.TIME_ROLL)
-        logging.warning("MAX ATTEMPTS EXCEDED")
+        self.logger.warning("Tentativas máximas excedidas")
         return False
