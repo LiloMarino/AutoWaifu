@@ -6,10 +6,11 @@ from classes.timer import Timer
 import config
 from classes.auto import Auto
 
-# Verifica se a pasta logs existe
-if not os.path.exists("logs"):
+# Verifica se a pastas existem
+if not os.path.exists("logs") or not os.path.exists("waifu_list"):
     # Se não existir, cria a pasta
-    os.makedirs("logs")
+    os.makedirs("logs", exist_ok=True)
+    os.makedirs("waifu_list", exist_ok=True)
 
 # Configuração do logger
 logging.basicConfig(

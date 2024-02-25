@@ -8,6 +8,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver import ActionChains
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.remote.webelement import WebElement
 import config
 
 
@@ -60,7 +61,7 @@ class Browser:
             try:
                 msg_xpath = '//*[@id="app-mount"]/div[2]/div[1]/div[1]/div/div[2]/div/div/div/div/div[3]/div[2]/main/form/div/div[1]/div/div[3]/div/div[2]'
                 WebDriverWait(self.driver, config.TIME_TO_WAIT).until(
-                        EC.presence_of_element_located((By.XPATH, msg_xpath))
+                    EC.presence_of_element_located((By.XPATH, msg_xpath))
                 )
                 if (
                     f"{config.SERVER_ID}/{config.CHANNEL_ID}"
@@ -149,7 +150,7 @@ class Browser:
     def close(self):
         self.driver.quit()
 
-    def get_last_message(self):
+    def get_last_message(self) -> WebElement:
         messages = WebDriverWait(self.driver, config.TIME_TO_WAIT).until(
             EC.presence_of_all_elements_located(
                 (By.XPATH, '//li[contains(@class, "messageListItem__6a4fb")]')
@@ -160,6 +161,20 @@ class Browser:
         last_message = messages[-1]
 
         return last_message
+
+    def get_embed(self, message: WebElement):
+        embed = {"name": None, "description": None, "footer": None}
+        embed["name"] = message.find_element(By.CLASS_NAME, "embedAuthorName_a1274b")
+        embed["description"] = message.find_element(
+            By.CLASS_NAME, "embedDescription__33443 embedMargin__9576e"
+        )
+        try:
+            embed["footer"] = message.find_element(
+                By.CLASS_NAME, "embedFooter_a8f9aa embedMargin__9576e"
+            )
+        except NoSuchElementException:
+            embed["footer"] = None
+        return embed
 
     def wait_for_emoji(self, emoji, max_attempts=3):
         for _ in range(max_attempts):

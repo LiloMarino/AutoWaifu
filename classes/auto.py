@@ -4,7 +4,7 @@ import re
 from classes.browser import Browser
 import config
 import logging
-
+from selenium.webdriver.remote.webelement import WebElement
 
 class Auto(Browser):
     def __init__(self):
@@ -35,6 +35,72 @@ class Auto(Browser):
         else:
             self.logger.info("Nenhuma correspondência encontrada para o padrão.")
         return int(rolls), int(us)
+        
+    def parse_roll(self, message):
+        """
+        Realiza o 'parsing' do roll obtendo as informações
+        mais relevantes dos rolls
+        Returns:
+            dict[str, Any]: Um dicionário contendo as informações relevantes
+        """
+        # Regex based parsing adapted from the EzMudae module by Znunu
+        # https://github.com/Znunu/EzMudae
+        embed = self.get_embed(message)
+        desc = embed["description"]
+        name = embed["name"]
+        series = None
+        owner = None
+        key = False
+        kak = 0
+
+        # Get series and key value if present
+        match = re.search(r"^(.*?[^<]*)(?:<:(\w+key))?", desc, re.DOTALL)
+        if match:
+            series = match.group(1).replace("\n", " ").strip()
+            if len(match.groups()) == 3:
+                key = match.group(2)
+
+        # Check if it was a roll
+        # Look for stars in embed (Example: **47**)
+        match = re.search(r"(?<=\*)(\d+)", desc, re.DOTALL)
+        if match:
+            kak = match.group(0)
+
+        # Look for picture wheel (Example: 1/31)
+        # match = re.search(r'(?<=\d)(\/)', desc, re.DOTALL) doesn't find
+
+        match = re.search(r"(:female:|:male:)", desc, re.DOTALL)
+        if match:
+            return
+
+        # Check if valid parse
+        if not series:
+            return
+
+        # Get owner if present
+        if not embed["footer"]:
+            is_claimed = False
+        else:
+            match = re.search(r"(?<=Belongs to )\w+", embed["footer"], re.DOTALL)
+            if match:
+                is_claimed = True
+                owner = match.group(0)
+            else:
+                is_claimed = False
+
+        # Log in roll list and console/logfile
+        with open("waifu_list/rolled.txt", "a") as f:
+            f.write(f"{datetime.datetime.now()}    {name} - {series}\n")
+
+        logging.info(f"Parsed roll: {name} - {series} - Claimed: {is_claimed}")
+        return {
+            "name": name,
+            "series": series,
+            "is_claimed": is_claimed,
+            "owner": owner,
+            "key": key,
+            "kak": kak,
+        }
 
     def parse_tu(self):
         """
