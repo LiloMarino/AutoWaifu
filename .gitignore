@@ -30,6 +30,6 @@ build/
 Pipfile.lock
 
 # Outros
-account.txt
+logs/log.txt
 .env
 driver/chromedriver.exe

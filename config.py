@@ -1,12 +1,8 @@
-import logging
 import os
 from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
-
-# Logging Config
-logging.basicConfig(level=logging.INFO)
 
 # Login Info
 EMAIL = os.getenv("EMAIL")
@@ -32,6 +28,9 @@ INSTANT_REACT_SPEED = 1
 # Emoji used for claiming
 CLAIM_EMOJI = ":heart:"
 CLAIM_METHOD_CLICK = False  # If True claim will attempt to react on emoji instead of add one (Needs Emoji available)
+
+# Log file
+LOG_FILE = "logs/log.log"
 
 # SELENIUM CONFIG INFO #
 ROOT_FOLDER = Path(__file__).parent

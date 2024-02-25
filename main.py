@@ -1,6 +1,23 @@
+import logging
+import os
+import sys
+import config
 from classes.auto import Auto
-from config import *
 
+# Verifica se a pasta logs existe
+if not os.path.exists('logs'):
+    # Se não existir, cria a pasta
+    os.makedirs('logs')
+
+# Configuração do logger
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO,
+    handlers=[
+        logging.FileHandler(config.LOG_FILE, 'a', 'utf-8'),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
 auto = Auto()
 
 auto.browser_login()
