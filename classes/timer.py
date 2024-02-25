@@ -1,6 +1,7 @@
 import datetime
 import logging
 from logging import config
+import random
 import time
 from classes.auto import Auto
 import config
@@ -37,9 +38,7 @@ class Timer:
         self.kakera_timer = auto.kakera_reset
         self.daily_duration = config.DAILY_DURATION
         self.claim_duration = config.CLAIM_DURATION
-        self.time_to_roll = (
-            config.TIME_TO_ROLL
-        )  # if not config.RANDOM_TIME else random.choice(list(range(5,25)))
+        self.time_to_roll = random.choice(list(range(2,15)))
         self.roll_duration = config.ROLL_DURATION
         self.kakera_duration = config.KAKERA_DURATION
         self.logger = logging.getLogger(__name__)
@@ -79,9 +78,7 @@ class Timer:
     def wait_for_roll(self):
         global launch
         while True:
-            hour = 3600  # Testing
-            minute = 60
-            end_of_interval = hour - (minute * self.time_to_roll)
+            end_of_interval = self.time_to_roll
             time_to_sleep = (
                 end_of_interval
                 + (self.roll_timer - datetime.datetime.now()).total_seconds()
@@ -94,7 +91,7 @@ class Timer:
             if not launch:
                 time.sleep(time_to_sleep)
             else:
-                time.sleep(10)
+                time.sleep(time_to_sleep)
                 launch = False
 
             self.roll_timer += datetime.timedelta(minutes=self.roll_duration)

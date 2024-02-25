@@ -22,8 +22,6 @@ ALWAYS_ROLL = True
 TIME_TO_WAIT = 30
 # Tempo de espera máximo de um elemento no chat
 TIME_ROLL = 1
-# Time in the hour to start rolling. (Example: 10 means 10 mins before reset. & 50 means 50 minutes before reset.)
-TIME_TO_ROLL = 10
 
 # Time between daily command resets, in minutes.
 # Set to 0 to disable auto dailies.
