@@ -9,6 +9,7 @@ import logging
 class Auto(Browser):
     def __init__(self):
         super().__init__()
+        self.logger = logging.getLogger(__name__)
         self.claim_reset = None
         self.claim_available = None
         self.rolls_reset = None
@@ -77,7 +78,10 @@ class Auto(Browser):
             re.DOTALL,
         )
         if match_daily_reset:
-            self.logger.info("Daily reset: " + match_daily_reset.group(1))
+            if match_daily_reset.group(1):
+                self.logger.info("Daily reset: " + match_daily_reset.group(1))
+            else:
+                self.logger.info("Daily está pronto!")
 
         can_react_to_kakera = bool(
             re.search(
@@ -107,7 +111,7 @@ class Auto(Browser):
         for time_str in [
             match_claim_reset.group(1),
             match_rolls_reset[1],
-            match_daily_reset.group(1),
+            match_daily_reset.group(1) if match_daily_reset.group(1) else None,
             match_kakera_reset.group(1) if match_kakera_reset else None,
         ]:
             # Specifically, group 7 may be None if kakera is ready
@@ -135,8 +139,6 @@ class Auto(Browser):
             minutes=times[2]
         )
         self.rolls_at_launch = match_roll_number.group(1)
-        pprint(self.__dict__)
-        return True
 
     def roll_waifu(self):
         self.send_message(f"{config.COMMAND_PREFIX}{config.ROLL_COMMAND}")
