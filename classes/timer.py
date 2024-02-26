@@ -86,8 +86,7 @@ class Timer:
                 f"Roll timer sleeping for {self.time_convert(time_to_sleep)}"
             )
 
-            if int(self.roll_count) == 0:
-                time.sleep(time_to_sleep)       
+            time.sleep(time_to_sleep)
 
             self.roll_timer += datetime.timedelta(minutes=self.roll_duration)
             self.logger.info("Rolls have been reset")

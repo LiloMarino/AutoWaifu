@@ -28,11 +28,10 @@ while True:
     comando = input("COMANDO:")
     if comando.lower() == "exit":
         break
-    elif comando.lower() == "roll":
-        auto.roll_waifu()
     elif comando.lower() == "rolls+":
         auto.roll_until_end()
     elif comando.lower() == "autoroll":
+        auto.roll_until_end()
         auto.parse_tu()
         logging.info("Parseado $tu")
         logging.info("Criando timers com base no $tu")
@@ -43,8 +42,7 @@ while True:
             threading.Thread(name='roll', target=timer.wait_for_roll).start()
         threading.Thread(name='claim', target=timer.wait_for_claim).start()
         threading.Thread(name='kakera', target=timer.wait_for_kakera).start()
-
-    elif comando.lower() == "view":
+    elif comando.lower() == "test":
         auto.parse_tu()
     else:
         print("COMANDO INVALIDO")
