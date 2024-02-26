@@ -34,7 +34,7 @@ class Auto(Browser):
             self.logger.info(f"Rolls: {rolls}, Us: {us}")
         else:
             self.logger.info("Nenhuma correspondência encontrada para o padrão.")
-        return int(rolls), int(us)
+        return int(rolls) + int(us)
         
     def parse_roll(self, message):
         """
@@ -226,8 +226,8 @@ class Auto(Browser):
                 is not None
             )
 
-        rolls, us = self.view_rolls()
-        for _ in range(rolls + us):
+        self.rolls_at_launch = self.view_rolls()
+        for _ in range(self.rolls_at_launch):
             self.roll_waifu()
             if check_end():
                 logging.info("STOP ROLLING")
