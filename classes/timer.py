@@ -76,7 +76,6 @@ class Timer:
         self.kakera_available = available
 
     def wait_for_roll(self):
-        global launch
         while True:
             end_of_interval = self.time_to_roll
             time_to_sleep = (
@@ -87,12 +86,8 @@ class Timer:
                 f"Roll timer sleeping for {self.time_convert(time_to_sleep)}"
             )
 
-            # If we just launched the bot, we roll without waiting for the next interval
-            if not launch:
-                time.sleep(time_to_sleep)
-            else:
-                time.sleep(time_to_sleep)
-                launch = False
+            if int(self.roll_count) == 0:
+                time.sleep(time_to_sleep)       
 
             self.roll_timer += datetime.timedelta(minutes=self.roll_duration)
             self.logger.info("Rolls have been reset")
