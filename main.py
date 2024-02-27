@@ -1,4 +1,5 @@
 import logging
+import multiprocessing
 import os
 import sys
 import threading
@@ -21,28 +22,54 @@ logging.basicConfig(
         logging.StreamHandler(sys.stdout),
     ],
 )
+
+# Modos de funcionamento
+all_processes : list[multiprocessing.Process] = []
+
+
+def auto_roll():
+    auto.roll_until_end()
+    auto.parse_tu()
+    logging.info("Parseado $tu")
+    logging.info("Criando timers com base no $tu")
+    timer = Timer(auto)
+    if config.DAILY_DURATION > 0:
+        process = multiprocessing.Process(name="daily", target=timer.wait_for_daily)
+        process.start()
+        all_processes.append(process)
+    if config.ROLL_DURATION > 0:
+        process = multiprocessing.Process(name="roll", target=timer.wait_for_roll)
+        process.start()
+        all_processes.append(process)
+    process = multiprocessing.Process(name="claim", target=timer.wait_for_claim)
+    process.start()
+    all_processes.append(process)
+    process = multiprocessing.Process(name="kakera", target=timer.wait_for_kakera)
+    process.start()
+    all_processes.append(process)
+
+
+func_modes = {
+    "rolls+": lambda: auto.roll_until_end(),
+    "autoroll": lambda: auto_roll(),
+    "test": lambda: auto.parse_tu(),
+}
+
+# Início do programa
 auto = Auto()
+while True:
+    comando = input("Digite o modo de funcionamento:")
+    if comando in func_modes:
+        break
+    print("Modo inválido!")
 
 auto.browser_login()
-while True:
-    comando = input("COMANDO:")
-    if comando.lower() == "exit":
-        break
-    elif comando.lower() == "rolls+":
-        auto.roll_until_end()
-    elif comando.lower() == "autoroll":
-        auto.roll_until_end()
-        auto.parse_tu()
-        logging.info("Parseado $tu")
-        logging.info("Criando timers com base no $tu")
-        timer = Timer(auto)
-        if config.DAILY_DURATION > 0:
-            threading.Thread(name='daily', target=timer.wait_for_daily).start()
-        if config.ROLL_DURATION > 0:
-            threading.Thread(name='roll', target=timer.wait_for_roll).start()
-        threading.Thread(name='claim', target=timer.wait_for_claim).start()
-        threading.Thread(name='kakera', target=timer.wait_for_kakera).start()
-    elif comando.lower() == "test":
-        auto.parse_tu()
-    else:
-        print("COMANDO INVALIDO")
+try:
+    func_modes[comando]()
+    while True:
+        input()
+except KeyboardInterrupt:
+    logging.info("Encerrando o programa...")
+    for process in all_processes:
+        process.terminate()
+    sys.exit()
