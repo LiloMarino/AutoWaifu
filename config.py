@@ -57,4 +57,4 @@ ROOT_FOLDER = Path(__file__).parent
 CHROMEDRIVER_EXEC = ROOT_FOLDER / "driver" / "chromedriver.exe"
 
 # | DEBUGGING TOOLS | #
-HEADLESS = False  
+HEADLESS = True  

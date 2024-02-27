@@ -84,7 +84,8 @@ class Timer:
                 f"Roll timer sleeping for {self.time_convert(time_to_sleep)}"
             )
 
-            sleep(time_to_sleep)
+            if sleep(time_to_sleep):
+                break
 
             self.roll_timer += datetime.timedelta(minutes=self.roll_duration)
             self.logger.info("Rolls have been reset")
@@ -102,7 +103,8 @@ class Timer:
         while not stop_event.is_set():
             x = (self.claim_timer - datetime.datetime.now()).total_seconds()
             self.logger.info(f"Claim timer sleeping for {self.time_convert(x)}")
-            sleep(x)
+            if sleep(x):
+                break
             self.claim_timer += datetime.timedelta(minutes=self.claim_duration)
             self.logger.info(f"Claims have been reset")
             self.claim_available = True
@@ -112,13 +114,15 @@ class Timer:
             x = (self.daily_timer - datetime.datetime.now()).total_seconds()
             if x > 0:  # In case daily is already ready
                 self.logger.info(f"Daily timer sleeping for {self.time_convert(x)}")
-                sleep(x)
+                if sleep(x):
+                    break
                 self.logger.info(f"Daily has been reset, initiating daily commands")
             else:
                 self.logger.info("Daily is ready, initiating daily commands")
             self.daily_timer += datetime.timedelta(minutes=self.daily_duration)
             self.auto.send_message(f"{config.COMMAND_PREFIX}daily")
-            sleep(3)  # Wait 3 seconds for processing
+            if sleep(3):  # Wait 3 seconds for processing
+                break
             self.auto.send_message(f"{config.COMMAND_PREFIX}dk")
 
     def wait_for_kakera(self):
@@ -128,7 +132,8 @@ class Timer:
                 self.logger.info(
                     f"Kakera loot timer sleeping for {self.time_convert(x)}"
                 )
-                sleep(x)
+                if sleep(x):
+                    break
             self.kakera_timer += datetime.timedelta(minutes=self.kakera_duration)
             self.logger.info(f"Kakera loot has been reset")
             self.kakera_available = True
