@@ -1,9 +1,9 @@
 import logging
-import multiprocessing
 import os
 import sys
 import threading
 from classes.timer import Timer
+from functions.sleep import stop_event
 import config
 from classes.auto import Auto
 
@@ -24,8 +24,7 @@ logging.basicConfig(
 )
 
 # Modos de funcionamento
-all_processes : list[multiprocessing.Process] = []
-
+threads : list[threading.Thread] = []
 
 def auto_roll():
     auto.roll_until_end()
@@ -34,19 +33,19 @@ def auto_roll():
     logging.info("Criando timers com base no $tu")
     timer = Timer(auto)
     if config.DAILY_DURATION > 0:
-        process = multiprocessing.Process(name="daily", target=timer.wait_for_daily)
-        process.start()
-        all_processes.append(process)
+        thread = threading.Thread(name="daily", target=timer.wait_for_daily)
+        thread.start()
+        threads.append(thread)
     if config.ROLL_DURATION > 0:
-        process = multiprocessing.Process(name="roll", target=timer.wait_for_roll)
-        process.start()
-        all_processes.append(process)
-    process = multiprocessing.Process(name="claim", target=timer.wait_for_claim)
-    process.start()
-    all_processes.append(process)
-    process = multiprocessing.Process(name="kakera", target=timer.wait_for_kakera)
-    process.start()
-    all_processes.append(process)
+        thread = threading.Thread(name="roll", target=timer.wait_for_roll)
+        thread.start()
+        threads.append(thread)
+    thread = threading.Thread(name="claim", target=timer.wait_for_claim)
+    thread.start()
+    threads.append(thread)
+    thread = threading.Thread(name="kakera", target=timer.wait_for_kakera)
+    thread.start()
+    threads.append(thread)
 
 
 func_modes = {
@@ -70,6 +69,8 @@ try:
         input()
 except KeyboardInterrupt:
     logging.info("Encerrando o programa...")
-    for process in all_processes:
-        process.terminate()
+    stop_event.set()
+    logging.info(f"O programa será encerrado em no máximo {len(threads)*config.THREAD_VERIFICATION_TIME} segundos")
+    for thread in threads:
+        thread.join()
     sys.exit()

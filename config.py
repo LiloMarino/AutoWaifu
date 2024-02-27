@@ -22,6 +22,8 @@ ALWAYS_ROLL = True
 TIME_TO_WAIT = 30
 # Tempo de espera máximo de um elemento no chat
 TIME_ROLL = 1
+# Intervalo que a thread verifica se o programa terminou
+THREAD_VERIFICATION_TIME = 5
 
 # Time between daily command resets, in minutes.
 # Set to 0 to disable auto dailies.

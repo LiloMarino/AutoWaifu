@@ -129,7 +129,7 @@ class Auto(Browser):
             self.logger.info("Claim reset: " + match_claim_reset.group(1))
 
         match_roll_number = re.search(
-            r"Você tem (\d+) rolls restantes\.", message, re.DOTALL
+            r"Você tem (\d+) roll(?:s)? restantes\.", message, re.DOTALL
         )
         if match_roll_number:
             self.logger.info("Number of rolls: " + match_roll_number.group(1))

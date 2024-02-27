@@ -2,11 +2,9 @@ import datetime
 import logging
 from logging import config
 import random
-import time
+from functions.sleep import sleep, stop_event
 from classes.auto import Auto
 import config
-
-launch = True
 
 
 class Timer:
@@ -38,7 +36,7 @@ class Timer:
         self.kakera_timer = auto.kakera_reset
         self.daily_duration = config.DAILY_DURATION
         self.claim_duration = config.CLAIM_DURATION
-        self.time_to_roll = random.choice(list(range(2,15)))
+        self.time_to_roll = random.choice(list(range(2, 15)))
         self.roll_duration = config.ROLL_DURATION
         self.kakera_duration = config.KAKERA_DURATION
         self.logger = logging.getLogger(__name__)
@@ -76,7 +74,7 @@ class Timer:
         self.kakera_available = available
 
     def wait_for_roll(self):
-        while True:
+        while not stop_event.is_set():
             end_of_interval = self.time_to_roll
             time_to_sleep = (
                 end_of_interval
@@ -86,7 +84,7 @@ class Timer:
                 f"Roll timer sleeping for {self.time_convert(time_to_sleep)}"
             )
 
-            time.sleep(time_to_sleep)
+            sleep(time_to_sleep)
 
             self.roll_timer += datetime.timedelta(minutes=self.roll_duration)
             self.logger.info("Rolls have been reset")
@@ -101,36 +99,36 @@ class Timer:
                     self.logger.info(f"No claim available, not rolling")
 
     def wait_for_claim(self):
-        while True:
+        while not stop_event.is_set():
             x = (self.claim_timer - datetime.datetime.now()).total_seconds()
             self.logger.info(f"Claim timer sleeping for {self.time_convert(x)}")
-            time.sleep(x)
+            sleep(x)
             self.claim_timer += datetime.timedelta(minutes=self.claim_duration)
             self.logger.info(f"Claims have been reset")
             self.claim_available = True
 
     def wait_for_daily(self):
-        while True:
+        while not stop_event.is_set():
             x = (self.daily_timer - datetime.datetime.now()).total_seconds()
             if x > 0:  # In case daily is already ready
                 self.logger.info(f"Daily timer sleeping for {self.time_convert(x)}")
-                time.sleep(x)
+                sleep(x)
                 self.logger.info(f"Daily has been reset, initiating daily commands")
             else:
                 self.logger.info("Daily is ready, initiating daily commands")
             self.daily_timer += datetime.timedelta(minutes=self.daily_duration)
             self.auto.send_message(f"{config.COMMAND_PREFIX}daily")
-            time.sleep(3)  # Wait 3 seconds for processing
+            sleep(3)  # Wait 3 seconds for processing
             self.auto.send_message(f"{config.COMMAND_PREFIX}dk")
 
     def wait_for_kakera(self):
-        while True:
+        while not stop_event.is_set():
             x = (self.kakera_timer - datetime.datetime.now()).total_seconds()
             if x > 0:  # In case kakera is already ready
                 self.logger.info(
                     f"Kakera loot timer sleeping for {self.time_convert(x)}"
                 )
-                time.sleep(x)
+                sleep(x)
             self.kakera_timer += datetime.timedelta(minutes=self.kakera_duration)
             self.logger.info(f"Kakera loot has been reset")
             self.kakera_available = True
